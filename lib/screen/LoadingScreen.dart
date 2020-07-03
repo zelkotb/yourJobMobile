@@ -2,8 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:job/Constant.dart';
+import 'package:job/screen/HomeScreen.dart';
 import 'package:job/screen/LoginScreen.dart';
+import 'package:job/utils/jwt.dart';
 
 class LoadingScreen extends StatefulWidget {
   @override
@@ -12,7 +15,6 @@ class LoadingScreen extends StatefulWidget {
 
 class _LoadingScreenState extends State<LoadingScreen>
     with TickerProviderStateMixin {
-
   double top1 = 300;
   double top2 = 150;
   double top3 = 450;
@@ -65,7 +67,7 @@ class _LoadingScreenState extends State<LoadingScreen>
     });
     controller.repeat(period: Duration(seconds: 1));
     controller2.repeat(period: Duration(seconds: 1));
-    changeScreen();
+    animationTimer();
   }
 
   @override
@@ -77,17 +79,32 @@ class _LoadingScreenState extends State<LoadingScreen>
     super.dispose();
   }
 
-  void changeScreen() {
+  void animationTimer() async {
     Duration sec = Duration(seconds: 10);
     Timer(
       sec,
-      () => Navigator.push(
+      () => changeScreen(),
+    );
+  }
+
+  void changeScreen() async {
+    JwtUtil.logoutUser();
+    bool ifAuthenticated = await JwtUtil.ifAuthenticated();
+    if (ifAuthenticated) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomeScreen(),
+        ),
+      );
+    } else {
+      Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => LoginScreen(),
         ),
-      ),
-    );
+      );
+    }
   }
 
   List<Positioned> getLoadingImages() {
@@ -158,8 +175,8 @@ class _LoadingScreenState extends State<LoadingScreen>
 }
 
 class LoadingImage extends StatefulWidget {
-  int colorIndex1=0;
-  int colorIndex2=5;
+  int colorIndex1 = 0;
+  int colorIndex2 = 5;
   IconData icon;
 
   LoadingImage({
@@ -188,10 +205,10 @@ class _LoadingImageState extends State<LoadingImage> {
       padding: EdgeInsets.all(0),
       onPressed: () {
         setState(() {
-          if(colorIndex2<colorsList.length-1){
+          if (colorIndex2 < colorsList.length - 1) {
             ++colorIndex1;
             ++colorIndex2;
-          }else{
+          } else {
             colorIndex1 = 0;
             colorIndex2 = 5;
           }

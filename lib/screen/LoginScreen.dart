@@ -5,9 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:job/Constant.dart';
 import 'package:job/model/AuthenticationDTO.dart';
+import 'package:job/screen/HomeScreen.dart';
+import 'package:job/screen/RegisterScreen.dart';
 import 'package:job/service/NetworkHelper.dart';
 import 'package:job/utils/jwt.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -15,6 +18,12 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+
+  @override
+  void initState() {
+    JwtUtil.logoutUser();
+    super.initState();
+  }
   final _formKey = GlobalKey<FormState>();
   bool validate = false;
   double loading = 100.0;
@@ -27,6 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
     hint: 'Username',
     errorMessage: "Field can not be empty",
     enabled: true,
+    maxLength: 20,
   );
   CustomTextField passwordField = CustomTextField(
     icon: Icons.security,
@@ -35,6 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
     suffixIcon: Icons.remove_red_eye,
     errorMessage: "Field can not be empty",
     enabled: true,
+    maxLength: 20,
   );
 
   @override
@@ -56,8 +67,15 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                CenterImage(
-                  loading: loading,
+                Hero(
+                  tag: 'centerImage',
+                  child: CenterImage(
+                    height: 200.0,
+                    width: 200.0,
+                    left: 100.0,
+                    size: 200.0,
+                    loading: loading,
+                  ),
                 ),
                 Form(
                   key: _formKey,
@@ -126,7 +144,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       color: Colors.black12,
                       animationDuration: Duration(seconds: 5),
                       splashColor: Colors.orangeAccent,
-                      onPressed: () {},
+                      onPressed: isEnabled ? () => navigateToPage(RegisterScreen()) : null,
                       child: Text(
                         'Register',
                         style: TextStyle(
@@ -145,6 +163,9 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  navigateToPage(Widget widget){
+    Navigator.push(context, MaterialPageRoute(builder: (context) => widget));
+  }
   sendToServer() async {
     if (_formKey.currentState.validate()) {
       setState(() {
@@ -179,9 +200,18 @@ class _LoginScreenState extends State<LoginScreen> {
       } else {
         await storage.write(key: 'jwt', value: result['jwt']);
         String jsonBody = JwtUtil.decodeJWTBody(result['jwt']);
-        //SharedPreferences prefs = await SharedPreferences.getInstance();
-        //prefs.setString('username', jsonBody['subject']);
-        //prefs.setString('roles', jsonBody['roles']);
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        var decodedJsonBody = jsonDecode(jsonBody);
+        List<dynamic> dynamicRoles = decodedJsonBody['roles'];
+        List<String> roles = dynamicRoles.map((dr) => dr.toString()).toList();
+        prefs.setString('username', decodedJsonBody['subject']);
+        prefs.setStringList('roles', roles);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomeScreen(),
+          ),
+        );
       }
       setState(() {
         this.loading = 100;
@@ -190,25 +220,37 @@ class _LoginScreenState extends State<LoginScreen> {
         passwordField.setEnabled(true);
       });
     } else {
-      this.validate = true;
+      setState(() {
+        this.validate = true;
+      });
+
     }
-    ;
   }
 }
 
 class CenterImage extends StatelessWidget {
   double loading;
-  CenterImage({this.loading});
+  double height;
+  double width;
+  double size;
+  double left;
+  CenterImage({
+    this.loading,
+    this.height,
+    this.width,
+    this.size,
+    this.left,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: <Widget>[
         Positioned(
-          left: 100,
+          left: left,
           child: Container(
-            height: 200.0,
-            width: 200.0,
+            height: height,
+            width: width,
             child: CircularProgressIndicator(
               backgroundColor: Colors.black38,
               valueColor: new AlwaysStoppedAnimation<Color>(Colors.orange),
@@ -217,12 +259,12 @@ class CenterImage extends StatelessWidget {
           ),
         ),
         Positioned(
-          left: 100,
+          left: left,
           child: Container(
             child: Icon(
               Icons.account_circle,
               color: kThemeColor,
-              size: 200,
+              size: size,
             ),
             decoration: BoxDecoration(
               boxShadow: [
@@ -237,8 +279,8 @@ class CenterImage extends StatelessWidget {
           ),
         ),
         Container(
-          height: 220.0,
-          width: 210.0,
+          height: height+30,
+          width: width+30,
           child: Text(''),
         ),
       ],
@@ -255,6 +297,7 @@ class CustomTextField extends StatefulWidget {
   GlobalKey<FormState> key;
   String value;
   bool enabled;
+  int maxLength;
 
   String getvalue() {
     return this.value;
@@ -271,7 +314,9 @@ class CustomTextField extends StatefulWidget {
       this.suffixIcon,
       this.errorMessage,
       this.key,
-      this.enabled});
+      this.enabled,
+      this.maxLength,
+      });
 
   @override
   _CustomTextFieldState createState() => _CustomTextFieldState();
@@ -285,6 +330,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
   String errorMessage;
   GlobalKey<FormState> key;
   bool enabled;
+  int maxLength;
 
   @override
   void initState() {
@@ -295,6 +341,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
     suffixIcon = widget.suffixIcon;
     errorMessage = widget.errorMessage;
     enabled = widget.enabled;
+    maxLength = widget.maxLength;
   }
 
   @override
@@ -311,7 +358,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
       child: TextFormField(
         enabled: enabled,
         obscureText: obscure,
-        maxLength: 20,
+        maxLength: maxLength,
         cursorColor: kThemeColor,
         cursorRadius: Radius.circular(10.0),
         cursorWidth: 5.0,
@@ -348,9 +395,11 @@ class _CustomTextFieldState extends State<CustomTextField> {
             highlightColor: Colors.transparent,
             splashColor: Colors.transparent,
             onPressed: () {
-              setState(() {
-                this.obscure = this.obscure == false ? true : false;
-              });
+              if (this.suffixIcon != null) {
+                setState(() {
+                  this.obscure = this.obscure == false ? true : false;
+                });
+              }
             },
             child: Icon(
               this.suffixIcon,
