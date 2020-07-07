@@ -4,7 +4,13 @@ import 'package:job/Constant.dart';
 import 'package:job/model/RegisterDTO.dart';
 import 'package:job/screen/LoginScreen.dart';
 import 'package:job/service/NetworkHelper.dart';
+import 'package:job/utils/jwt.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+
+enum UserType {
+  CANDIDATE,
+  RECRUITER,
+}
 
 class RegisterScreen extends StatefulWidget {
   @override
@@ -15,6 +21,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   double loading = 100;
   bool isEnabled = true;
   bool validate = false;
+  UserType type = UserType.CANDIDATE;
   RegisterDTO registerDTO = RegisterDTO();
   NetworkHelper helper = NetworkHelper();
 
@@ -33,6 +40,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     hint: 'Password',
     suffixIcon: Icons.remove_red_eye,
     errorMessage: "Field can not be empty",
+    passwordErrorMessage: "please use a valid password",
     enabled: true,
     maxLength: 20,
   );
@@ -42,6 +50,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     hint: 'Repeat Password',
     suffixIcon: Icons.remove_red_eye,
     errorMessage: "Field can not be empty",
+    repeatPasswordErrorMessage: "Field must much Password Field",
     enabled: true,
     maxLength: 20,
   );
@@ -50,6 +59,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     obscure: false,
     hint: 'Email',
     errorMessage: "Field can not be empty",
+    emailErrorMessage: "please use à valid email",
     enabled: true,
     maxLength: 40,
   );
@@ -92,6 +102,62 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       passwordTextField,
                       repeatPasswordTextField,
                       emailTextField,
+                      Container(
+                        width: 400,
+                        margin: EdgeInsets.only(
+                          left: 20,
+                        ),
+                        child: Row(
+                          children: <Widget>[
+                            Container(
+                              width: 200,
+                              child: ListTile(
+                                title: Text(
+                                  'Candidate',
+                                  style: TextStyle(
+                                    color: kThemeColor,
+                                  ),
+                                ),
+                                leading: Radio(
+                                  value: UserType.CANDIDATE,
+                                  groupValue: type,
+                                  activeColor: kThemeColor,
+                                  onChanged: isEnabled
+                                      ? (UserType value) {
+                                          setState(() {
+                                            type = value;
+                                          });
+                                        }
+                                      : null,
+                                ),
+                              ),
+                            ),
+                            Container(
+                              width: 170,
+                              child: ListTile(
+                                title: Text(
+                                  'Recruiter',
+                                  style: TextStyle(
+                                    color: kThemeColor,
+                                  ),
+                                ),
+                                leading: Radio(
+                                  value: UserType.RECRUITER,
+                                  groupValue: type,
+                                  activeColor: kThemeColor,
+                                  onChanged: isEnabled
+                                      ? (UserType value) {
+                                          setState(() {
+                                            type = value;
+                                          });
+                                        }
+                                      : null,
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
                       Padding(
                         padding: EdgeInsets.symmetric(vertical: 16.0),
                         child: RaisedButton(
@@ -137,6 +203,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   sendToServer() async {
+    repeatPasswordTextField.setPasswordValue(passwordTextField.getvalue());
     if (_formKey.currentState.validate()) {
       setState(() {
         this.loading = null;
@@ -148,12 +215,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
       registerDTO.setUsername(this.usernameTextField.getvalue());
       registerDTO.setPassword(this.passwordTextField.getvalue());
       registerDTO.setEmail(this.emailTextField.getvalue());
+      List<String> roles = List();
+      String role = type.toString().substring(type.toString().indexOf('.') + 1);
+      roles.add(role);
+      registerDTO.setRoles(roles);
       helper.setUrl('$baseUrl/my/pro/job/account/register');
       var response = await helper.register(registerDTO);
       if (response == 'Internal error' || response['message'] != null) {
         ErrorResponse errorResponse = ErrorResponse();
         String message =
-            response['message'] == null ? response : response['message'];
+            response == 'Internal error' ? response : response['message'];
         errorResponse.setMessage(message);
         Alert(
           context: context,
@@ -204,7 +275,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         this.passwordTextField.setEnabled(true);
         this.emailTextField.setEnabled(true);
       });
-    }else{
+    } else {
       setState(() {
         this.validate = true;
       });

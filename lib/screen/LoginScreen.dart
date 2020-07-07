@@ -18,12 +18,12 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-
   @override
   void initState() {
     JwtUtil.logoutUser();
     super.initState();
   }
+
   final _formKey = GlobalKey<FormState>();
   bool validate = false;
   double loading = 100.0;
@@ -50,112 +50,117 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          fit: BoxFit.cover,
-          colorFilter: ColorFilter.mode(Colors.black54, BlendMode.colorBurn),
-          image: AssetImage('images/background.jpg'),
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(Colors.black54, BlendMode.colorBurn),
+            image: AssetImage('images/background.jpg'),
+          ),
         ),
-      ),
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: SingleChildScrollView(
-          child: Container(
-            margin: EdgeInsets.only(top: 100),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                Hero(
-                  tag: 'centerImage',
-                  child: CenterImage(
-                    height: 200.0,
-                    width: 200.0,
-                    left: 100.0,
-                    size: 200.0,
-                    loading: loading,
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          body: SingleChildScrollView(
+            child: Container(
+              margin: EdgeInsets.only(top: 100),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  Hero(
+                    tag: 'centerImage',
+                    child: CenterImage(
+                      height: 200.0,
+                      width: 200.0,
+                      left: 100.0,
+                      size: 200.0,
+                      loading: loading,
+                    ),
                   ),
-                ),
-                Form(
-                  key: _formKey,
-                  autovalidate: this.validate,
-                  child: Column(
-                    children: <Widget>[
-                      usernameField,
-                      passwordField,
-                      Padding(
-                        padding: EdgeInsets.symmetric(vertical: 16.0),
-                        child: RaisedButton(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: new BorderRadius.circular(10.0),
-                            side: BorderSide(color: Colors.orange),
-                          ),
-                          elevation: 5.0,
-                          animationDuration: Duration(seconds: 10),
-                          splashColor: Colors.orangeAccent,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 100,
-                            vertical: 17,
-                          ),
-                          color: kThemeColor,
-                          disabledColor: kThemeColor.withOpacity(0.8),
-                          onPressed: isEnabled ? () => sendToServer() : null,
-                          child: Container(
-                            width: 150,
-                            height: 25,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Text(
-                                  'Submit',
-                                  style: TextStyle(
-                                      color: Colors.black, fontSize: 20),
-                                ),
-                              ],
+                  Form(
+                    key: _formKey,
+                    autovalidate: this.validate,
+                    child: Column(
+                      children: <Widget>[
+                        usernameField,
+                        passwordField,
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 16.0),
+                          child: RaisedButton(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: new BorderRadius.circular(10.0),
+                              side: BorderSide(color: Colors.orange),
                             ),
+                            elevation: 5.0,
+                            animationDuration: Duration(seconds: 10),
+                            splashColor: Colors.orangeAccent,
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 100,
+                              vertical: 17,
+                            ),
+                            color: kThemeColor,
+                            disabledColor: kThemeColor.withOpacity(0.8),
+                            onPressed: isEnabled ? () => sendToServer() : null,
+                            child: Container(
+                              width: 150,
+                              height: 25,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Text(
+                                    'Submit',
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 20),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      RaisedButton(
+                        color: Colors.black12,
+                        animationDuration: Duration(seconds: 5),
+                        splashColor: Colors.orangeAccent,
+                        onPressed: () {},
+                        child: Text(
+                          'Forget Password',
+                          style: TextStyle(
+                            color: Colors.orangeAccent,
+                            fontSize: 17,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 50,
+                        height: 50,
+                      ),
+                      RaisedButton(
+                        color: Colors.black12,
+                        animationDuration: Duration(seconds: 5),
+                        splashColor: Colors.orangeAccent,
+                        onPressed: isEnabled
+                            ? () => navigateToPage(RegisterScreen())
+                            : null,
+                        child: Text(
+                          'Register',
+                          style: TextStyle(
+                            color: Colors.orangeAccent,
+                            fontSize: 17,
                           ),
                         ),
                       ),
                     ],
-                  ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    RaisedButton(
-                      color: Colors.black12,
-                      animationDuration: Duration(seconds: 5),
-                      splashColor: Colors.orangeAccent,
-                      onPressed: () {},
-                      child: Text(
-                        'Forget Password',
-                        style: TextStyle(
-                          color: Colors.orangeAccent,
-                          fontSize: 17,
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 50,
-                      height: 50,
-                    ),
-                    RaisedButton(
-                      color: Colors.black12,
-                      animationDuration: Duration(seconds: 5),
-                      splashColor: Colors.orangeAccent,
-                      onPressed: isEnabled ? () => navigateToPage(RegisterScreen()) : null,
-                      child: Text(
-                        'Register',
-                        style: TextStyle(
-                          color: Colors.orangeAccent,
-                          fontSize: 17,
-                        ),
-                      ),
-                    ),
-                  ],
-                )
-              ],
+                  )
+                ],
+              ),
             ),
           ),
         ),
@@ -163,9 +168,10 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  navigateToPage(Widget widget){
+  navigateToPage(Widget widget) {
     Navigator.push(context, MaterialPageRoute(builder: (context) => widget));
   }
+
   sendToServer() async {
     if (_formKey.currentState.validate()) {
       setState(() {
@@ -223,7 +229,6 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
         this.validate = true;
       });
-
     }
   }
 }
@@ -279,8 +284,8 @@ class CenterImage extends StatelessWidget {
           ),
         ),
         Container(
-          height: height+30,
-          width: width+30,
+          height: height + 30,
+          width: width + 30,
           child: Text(''),
         ),
       ],
@@ -294,6 +299,10 @@ class CustomTextField extends StatefulWidget {
   String hint;
   IconData suffixIcon;
   String errorMessage;
+  String passwordErrorMessage;
+  String emailErrorMessage;
+  String repeatPasswordErrorMessage;
+  String passwordValue;
   GlobalKey<FormState> key;
   String value;
   bool enabled;
@@ -303,20 +312,30 @@ class CustomTextField extends StatefulWidget {
     return this.value;
   }
 
+  void setPasswordValue(String passwordValue){
+    this.passwordValue = passwordValue;
+  }
+  String getPasswordValue(){
+    return this.passwordValue;
+  }
   void setEnabled(bool enabled) {
     this.enabled = enabled;
   }
 
-  CustomTextField(
-      {this.icon,
-      this.obscure,
-      this.hint,
-      this.suffixIcon,
-      this.errorMessage,
-      this.key,
-      this.enabled,
-      this.maxLength,
-      });
+  CustomTextField({
+    this.icon,
+    this.obscure,
+    this.hint,
+    this.suffixIcon,
+    this.errorMessage,
+    this.key,
+    this.enabled,
+    this.maxLength,
+    this.passwordErrorMessage,
+    this.emailErrorMessage,
+    this.repeatPasswordErrorMessage,
+    this.passwordValue,
+  });
 
   @override
   _CustomTextFieldState createState() => _CustomTextFieldState();
@@ -328,6 +347,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
   String hint;
   IconData suffixIcon;
   String errorMessage;
+  String passwordErrorMessage;
+  String emailErrorMessage;
+  String repeatPasswordErrorMessage;
   GlobalKey<FormState> key;
   bool enabled;
   int maxLength;
@@ -342,14 +364,21 @@ class _CustomTextFieldState extends State<CustomTextField> {
     errorMessage = widget.errorMessage;
     enabled = widget.enabled;
     maxLength = widget.maxLength;
+    passwordErrorMessage = widget.passwordErrorMessage;
+    emailErrorMessage = widget.emailErrorMessage;
+    repeatPasswordErrorMessage = widget.repeatPasswordErrorMessage;
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: 350,
-      margin: EdgeInsets.only(bottom: 15),
-      padding: EdgeInsets.symmetric(horizontal: 10),
+      margin: EdgeInsets.only(bottom: 10),
+      padding: EdgeInsets.only(
+        right: 10,
+        left: 10,
+        bottom: 5,
+      ),
       decoration: BoxDecoration(boxShadow: [
         BoxShadow(
           color: Colors.black12,
@@ -370,6 +399,21 @@ class _CustomTextFieldState extends State<CustomTextField> {
           if (value.isEmpty) {
             return this.errorMessage;
           }
+          else if (hint == 'Password') {
+            if (!JwtUtil.validatePassword(value)) {
+              return this.passwordErrorMessage;
+            }
+          }
+          else if (hint == 'Email') {
+            if (!JwtUtil.validateEmail(value)) {
+              return this.emailErrorMessage;
+            }
+          }
+          else if (hint == 'Repeat Password') {
+              if(!JwtUtil.validateRepeatPassword(value, widget.getPasswordValue())){
+                return this.repeatPasswordErrorMessage;
+              }
+          }
           return null;
         },
         onChanged: (value) {
@@ -378,7 +422,10 @@ class _CustomTextFieldState extends State<CustomTextField> {
           });
         },
         decoration: InputDecoration(
-          errorStyle: TextStyle(color: Colors.red[400], fontSize: 15),
+          errorStyle: TextStyle(
+            color: Colors.red[400],
+            fontSize: 15,
+          ),
           helperText: 'mandatory *',
           helperStyle: TextStyle(
             color: kThemeColor,

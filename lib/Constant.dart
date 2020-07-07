@@ -15,4 +15,6 @@ const List<Color> colorsList = [
 ];
 
 const kThemeColor = Colors.orange;
-const String baseUrl = "http://3ad680f99e29.ngrok.io";
+const String baseUrl = "http://2c8cb02ed02f.ngrok.io";
+const String kPasswordPattern = r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$';
+const String kEmailPattern = r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+";

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:job/Constant.dart';
 
 class JwtUtil {
 
@@ -19,5 +20,19 @@ class JwtUtil {
 
   static void logoutUser() async{
     secureStorage.delete(key: 'jwt');
+  }
+
+  static bool validatePassword(String password){
+    RegExp regExp = new RegExp(kPasswordPattern);
+    return regExp.hasMatch(password);
+  }
+
+  static bool validateEmail(String email){
+    RegExp regExp = new RegExp(kEmailPattern);
+    return regExp.hasMatch(email);
+  }
+
+  static bool validateRepeatPassword(String repeatPassword, String password){
+    return repeatPassword==password ? true : false ;
   }
 }

@@ -4,6 +4,7 @@ class RegisterDTO{
   String _username;
   String _password;
   String _email;
+  List<String> roles;
 
   String getUsername(){
     return this._username;
@@ -29,11 +30,20 @@ class RegisterDTO{
     this._email = email;
   }
 
+  List<String> getRoles(){
+    return this.roles;
+  }
+
+  void setRoles(List<String> roles){
+    this.roles = roles;
+  }
+
   Map<String, dynamic> toJson (){
     return {
       'username' : this._username,
       'password' : this._password,
-      'email' : this._email
+      'email' : this._email,
+      'roles' : this.roles,
     };
   }
 
@@ -41,6 +51,7 @@ class RegisterDTO{
     this._username = json['username'];
     this._password = json['password'];
     this._email = json['email'];
+    this.roles = json['roles'];
     return this;
   }
 }
