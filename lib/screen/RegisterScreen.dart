@@ -86,10 +86,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Hero(
                   tag: 'centerImage',
                   child: CenterImage(
-                    height: 140.0,
-                    width: 140.0,
-                    left: 140.0,
-                    size: 140.0,
+                    height: (MediaQuery.of(context).size.width) / 2.1,
+                    width: (MediaQuery.of(context).size.width) / 2.1,
+                    size: (MediaQuery.of(context).size.width) / 2.1,
                     loading: loading,
                   ),
                 ),
@@ -103,14 +102,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       repeatPasswordTextField,
                       emailTextField,
                       Container(
-                        width: 400,
-                        margin: EdgeInsets.only(
-                          left: 20,
-                        ),
+                        width: (MediaQuery.of(context).size.width),
+                        margin: EdgeInsets.only(left: 15, right: 15),
                         child: Row(
                           children: <Widget>[
                             Container(
-                              width: 200,
+                              width: (MediaQuery.of(context).size.width)/2.2,
                               child: ListTile(
                                 title: Text(
                                   'Candidate',
@@ -133,7 +130,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               ),
                             ),
                             Container(
-                              width: 170,
+                              width: (MediaQuery.of(context).size.width)/2.5,
                               child: ListTile(
                                 title: Text(
                                   'Recruiter',
@@ -160,33 +157,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       Padding(
                         padding: EdgeInsets.symmetric(vertical: 16.0),
-                        child: RaisedButton(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: new BorderRadius.circular(10.0),
-                            side: BorderSide(color: kThemeColor),
-                          ),
-                          elevation: 5.0,
-                          animationDuration: Duration(seconds: 10),
-                          splashColor: Colors.orangeAccent,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 100,
-                            vertical: 17,
-                          ),
-                          color: kThemeColor,
-                          disabledColor: kThemeColor.withOpacity(0.8),
-                          onPressed: isEnabled ? () => sendToServer() : null,
-                          child: Container(
-                            width: 150,
-                            height: 25,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Text(
-                                  'Submit',
-                                  style: TextStyle(
-                                      color: Colors.black, fontSize: 20),
-                                ),
-                              ],
+                        child: Container(
+                          margin: EdgeInsets.only(left: 25, right: 25),
+                          child: RaisedButton(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: new BorderRadius.circular(10.0),
+                              side: BorderSide(color: kThemeColor),
+                            ),
+                            elevation: 5.0,
+                            animationDuration: Duration(seconds: 10),
+                            splashColor: Colors.orangeAccent,
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 100,
+                              vertical: 17,
+                            ),
+                            color: kThemeColor,
+                            disabledColor: kThemeColor.withOpacity(0.8),
+                            onPressed: isEnabled ? () => sendToServer() : null,
+                            child: Container(
+                              height: 25,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Text(
+                                    'Submit',
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 20),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),

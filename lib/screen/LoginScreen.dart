@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:job/Constant.dart';
 import 'package:job/model/AuthenticationDTO.dart';
+import 'package:job/routes/RotationRoute.dart';
+import 'package:job/routes/SlideLeftRoute.dart';
 import 'package:job/screen/HomeScreen.dart';
 import 'package:job/screen/RegisterScreen.dart';
 import 'package:job/service/NetworkHelper.dart';
@@ -21,7 +23,9 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     JwtUtil.logoutUser();
+    //print("width "+MediaQuery.of(context).size.width.toString());
     super.initState();
+
   }
 
   final _formKey = GlobalKey<FormState>();
@@ -72,10 +76,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   Hero(
                     tag: 'centerImage',
                     child: CenterImage(
-                      height: 200.0,
-                      width: 200.0,
-                      left: 100.0,
-                      size: 200.0,
+                      height: (MediaQuery.of(context).size.width)/2.1,
+                      width: (MediaQuery.of(context).size.width)/2.1,
+                      size: (MediaQuery.of(context).size.width)/2.1,
                       loading: loading,
                     ),
                   ),
@@ -88,33 +91,35 @@ class _LoginScreenState extends State<LoginScreen> {
                         passwordField,
                         Padding(
                           padding: EdgeInsets.symmetric(vertical: 16.0),
-                          child: RaisedButton(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: new BorderRadius.circular(10.0),
-                              side: BorderSide(color: Colors.orange),
-                            ),
-                            elevation: 5.0,
-                            animationDuration: Duration(seconds: 10),
-                            splashColor: Colors.orangeAccent,
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 100,
-                              vertical: 17,
-                            ),
-                            color: kThemeColor,
-                            disabledColor: kThemeColor.withOpacity(0.8),
-                            onPressed: isEnabled ? () => sendToServer() : null,
-                            child: Container(
-                              width: 150,
-                              height: 25,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  Text(
-                                    'Submit',
-                                    style: TextStyle(
-                                        color: Colors.black, fontSize: 20),
-                                  ),
-                                ],
+                          child: Container(
+                            margin: EdgeInsets.only(left:25,right: 25),
+                            child: RaisedButton(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: new BorderRadius.circular(10.0),
+                                side: BorderSide(color: Colors.orange),
+                              ),
+                              elevation: 5.0,
+                              animationDuration: Duration(seconds: 10),
+                              splashColor: Colors.orangeAccent,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 100,
+                                vertical: 17,
+                              ),
+                              color: kThemeColor,
+                              disabledColor: kThemeColor.withOpacity(0.8),
+                              onPressed: isEnabled ? () => sendToServer() : null,
+                              child: Container(
+                                height: 25,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    Text(
+                                      'Submit',
+                                      style: TextStyle(
+                                          color: Colors.black, fontSize: 20),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -139,7 +144,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       SizedBox(
-                        width: 50,
+                        width: (MediaQuery.of(context).size.width)/3,
                         height: 50,
                       ),
                       RaisedButton(
@@ -169,7 +174,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   navigateToPage(Widget widget) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => widget));
+    Navigator.push(context, MaterialPageRoute(builder: (context)=>RegisterScreen()));
   }
 
   sendToServer() async {
@@ -238,13 +243,11 @@ class CenterImage extends StatelessWidget {
   double height;
   double width;
   double size;
-  double left;
   CenterImage({
     this.loading,
     this.height,
     this.width,
     this.size,
-    this.left,
   });
 
   @override
@@ -252,7 +255,7 @@ class CenterImage extends StatelessWidget {
     return Stack(
       children: <Widget>[
         Positioned(
-          left: left,
+          left: (((MediaQuery.of(context).size.width)/2)-(width/2)),
           child: Container(
             height: height,
             width: width,
@@ -264,7 +267,7 @@ class CenterImage extends StatelessWidget {
           ),
         ),
         Positioned(
-          left: left,
+          left: (((MediaQuery.of(context).size.width)/2)-(width/2)),
           child: Container(
             child: Icon(
               Icons.account_circle,
@@ -372,8 +375,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 350,
-      margin: EdgeInsets.only(bottom: 10),
+      margin: EdgeInsets.only(bottom: 10,left: 25,right: 25,),
       padding: EdgeInsets.only(
         right: 10,
         left: 10,
@@ -482,3 +484,4 @@ class _CustomTextFieldState extends State<CustomTextField> {
     );
   }
 }
+
