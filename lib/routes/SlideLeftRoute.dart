@@ -4,6 +4,7 @@ class SlideLeftRoute extends PageRouteBuilder{
   final Widget page;
   SlideLeftRoute({this.page})
       : super(
+    transitionDuration: Duration(milliseconds: 700),
     pageBuilder: (
         BuildContext context,
         Animation<double> animation,
@@ -18,7 +19,7 @@ class SlideLeftRoute extends PageRouteBuilder{
         ) =>
         SlideTransition(
           position: Tween<Offset>(
-            begin: const Offset(-1,0),
+            begin: const Offset(1,0),
             end: Offset.zero,
           ).animate(animation),
           child: child,

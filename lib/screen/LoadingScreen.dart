@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:job/Constant.dart';
 import 'package:job/screen/HomeScreen.dart';
 import 'package:job/screen/LoginScreen.dart';
+import 'dart:ui' as ui;
+
 import 'package:job/utils/jwt.dart';
 
 class LoadingScreen extends StatefulWidget {
@@ -15,76 +15,84 @@ class LoadingScreen extends StatefulWidget {
 
 class _LoadingScreenState extends State<LoadingScreen>
     with TickerProviderStateMixin {
-  double top1 = 300;
-  double top2 = 150;
-  double top3 = 450;
-  double top4 = 300;
-  double left1 = 0;
-  double left2 = 165;
-  double left3 = 165;
-  double left4 = 330;
-  AnimationController controller;
-  AnimationController controller2;
-
-  Position calculatePosition(double top, double left) {
-    if (top > 150 && top <= 300 && left >= 0 && left < 165) {
-      top = top - controller.value.toInt();
-      left = left + controller2.value.toInt();
-    } else if (top >= 150 && top < 300 && left < 330 && left >= 165) {
-      top = top + controller.value.toInt();
-      left = left + controller2.value.toInt();
-    } else if (top >= 300 && top < 450 && left <= 330 && left > 165) {
-      top = top + controller.value.toInt();
-      left = left - controller2.value.toInt();
-    } else if (top > 300 && top <= 450 && left > 0 && left <= 165) {
-      top = top - controller.value.toInt();
-      left = left - controller2.value.toInt();
-    }
-    Position position = Position(top, left);
-    return position;
-  }
+  Color colorCircle2 = Colors.white;
+  Color colorCircle3 = Colors.white;
+  Color colorCircle4 = Colors.white;
+  Color iconColor = Colors.transparent;
+  final Tween<double> turnsTween = Tween<double>(
+    begin: 1,
+    end: 3,
+  );
+  AnimationController _controller;
+  AnimationController _animationController;
+  Animation _animation;
 
   @override
   void initState() {
     super.initState();
-    controller = AnimationController(
-      duration: Duration(seconds: 1),
-      vsync: this,
-      upperBound: 150.0,
-    );
-    controller2 = AnimationController(
-      duration: Duration(seconds: 1),
-      vsync: this,
-      upperBound: 165.0,
-    );
-    controller.forward();
-    controller.addListener(() {
-      setState(() {});
-    });
-    controller2.forward();
-    controller2.addListener(() {
-      setState(() {});
-    });
-    controller.repeat(period: Duration(seconds: 1));
-    controller2.repeat(period: Duration(seconds: 1));
     animationTimer();
-  }
-
-  @override
-  void dispose() {
-    // Clean up the controller when the widget is removed from the
-    // widget tree.
-    controller.dispose();
-    controller2.dispose();
-    super.dispose();
-  }
-
-  void animationTimer() async {
-    Duration sec = Duration(seconds: 10);
-    Timer(
-      sec,
-      () => changeScreen(),
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
     );
+    _animationController = AnimationController(vsync:this,duration: Duration(seconds: 2));
+    _animationController.repeat(reverse: true);
+    _animation =  Tween(begin: 1.0,end: 10.0).animate(_animationController)..addListener((){
+      setState(() {
+
+      });
+    });
+  }
+
+  Future<void> animationTimer() async {
+    Duration duration2 = Duration(milliseconds: 1000);
+    Duration duration3 = Duration(milliseconds: 1500);
+    Duration duration4 = Duration(milliseconds: 2000);
+    Duration duration5 = Duration(milliseconds: 2500);
+    Duration duration6 = Duration(milliseconds: 4000);
+    Duration duration7 = Duration(milliseconds: 7000);
+    Duration duration8 = Duration(seconds: 9);
+    Timer(duration2, () => changeColor2());
+    Timer(duration3, () => changeColor3());
+    Timer(duration4, () => changeColor4());
+    Timer(duration5, () => changeIconColor());
+    Timer(duration6, () => changeAnimation('f'));
+    Timer(duration7, () => changeAnimation('r'));
+    Timer(duration8, () => changeScreen());
+  }
+
+  void changeAnimation(String type){
+    if(type == 'f'){
+      setState(() {
+        _controller.forward();
+      });
+    }else{
+      _controller.reverse();
+    }
+
+  }
+  void changeColor2() async {
+    setState(() {
+      colorCircle2 = Colors.orange[400];
+    });
+  }
+
+  void changeColor3() async {
+    setState(() {
+      colorCircle3 = Colors.orange[200];
+    });
+  }
+
+  void changeColor4() async {
+    setState(() {
+      colorCircle4 = Colors.orange[100];
+    });
+  }
+
+  void changeIconColor() async {
+    setState(() {
+      iconColor = Colors.orange[200];
+    });
   }
 
   void changeScreen() async {
@@ -107,149 +115,98 @@ class _LoadingScreenState extends State<LoadingScreen>
     }
   }
 
-  List<Positioned> getLoadingImages() {
-    List<Positioned> images = [];
-    images.add(
-      Positioned(
-        top: calculatePosition(top1, left1).getTop(),
-        left: calculatePosition(top1, left1).getLeft(),
-        child: LoadingImage(
-          icon: Icons.assignment_ind,
-        ),
-      ),
-    );
-    images.add(
-      Positioned(
-        top: calculatePosition(top2, left2).getTop(),
-        left: calculatePosition(top2, left2).getLeft(),
-        child: LoadingImage(
-          icon: Icons.assignment_turned_in,
-        ),
-      ),
-    );
-    images.add(
-      Positioned(
-        top: calculatePosition(top3, left3).getTop(),
-        left: calculatePosition(top3, left3).getLeft(),
-        child: LoadingImage(
-          icon: Icons.print,
-        ),
-      ),
-    );
-    images.add(
-      Positioned(
-        top: calculatePosition(top4, left4).getTop(),
-        left: calculatePosition(top4, left4).getLeft(),
-        child: LoadingImage(
-          icon: Icons.phone,
-        ),
-      ),
-    );
-    images.add(
-      Positioned(
-        top: 300,
-        left: 165,
-        child: Container(
-          child: LoadingImage(
-            icon: Icons.card_travel,
-          ),
-        ),
-      ),
-    );
-    return images;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Container(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        color: Colors.white10,
-        child: Stack(
-          children: getLoadingImages(),
-        ),
-      ),
-    );
-  }
-}
-
-class LoadingImage extends StatefulWidget {
-  int colorIndex1 = 0;
-  int colorIndex2 = 5;
-  IconData icon;
-
-  LoadingImage({
-    this.icon,
-  });
-  @override
-  _LoadingImageState createState() => _LoadingImageState();
-}
-
-class _LoadingImageState extends State<LoadingImage> {
-  int colorIndex1;
-  int colorIndex2;
-  IconData icon;
-
-  @override
-  void initState() {
-    icon = widget.icon;
-    colorIndex1 = widget.colorIndex1;
-    colorIndex2 = widget.colorIndex2;
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FlatButton(
-      padding: EdgeInsets.all(0),
-      onPressed: () {
-        setState(() {
-          if (colorIndex2 < colorsList.length - 1) {
-            ++colorIndex1;
-            ++colorIndex2;
-          } else {
-            colorIndex1 = 0;
-            colorIndex2 = 5;
-          }
-        });
-      },
-      child: Container(
-        margin: EdgeInsets.only(left: 1),
-        padding: EdgeInsets.all(20),
-        child: Icon(
-          icon,
-          color: colorsList[colorIndex2],
-          size: 40,
-        ),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.white10,
-          boxShadow: [
-            BoxShadow(
-              color: colorsList[colorIndex1],
-              spreadRadius: 2,
-              blurRadius: 2,
-              offset: Offset(0, 0),
+        color: Colors.white,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Container(
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.black,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black54,
+                      blurRadius: _animation.value,
+                      spreadRadius: 1,
+                    )
+                  ]),
+              child: FlatButton(
+                child: CircleAvatar(
+                  radius: 100,
+                  backgroundColor: Colors.orange[600],
+                  child: CircleAvatar(
+                    radius: 90,
+                    backgroundColor: colorCircle2,
+                    child: CircleAvatar(
+                      radius: 80,
+                      backgroundColor: colorCircle3,
+                      child: CircleAvatar(
+                        radius: 70,
+                        backgroundColor: colorCircle4,
+                        child: CircleAvatar(
+                          radius: 60,
+                          backgroundColor: Colors.white70,
+                          child: Icon(
+                            Icons.business_center,
+                            size: 70,
+                            color: iconColor,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            RotationTransition(
+              turns: turnsTween.animate(_controller),
+              child: Container(
+                width: 300,
+                child: Center(
+                  child: RichText(
+                    text: TextSpan(
+                        text: 'Y',
+                        style: TextStyle(
+                          foreground: Paint()
+                            ..shader = ui.Gradient.linear(
+                              const Offset(0, 20),
+                              const Offset(250, 25),
+                              <Color>[
+                                Colors.red,
+                                Colors.orangeAccent,
+                              ],
+                            ),
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'DancingScript',
+                          fontSize: 70,
+                        ),
+                        children: [
+                          TextSpan(
+                            text: 'our',
+                            style: TextStyle(
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          TextSpan(
+                            text: ' J',
+                            style: TextStyle(),
+                          ),
+                          TextSpan(
+                            text: 'ob',
+                            style: TextStyle(
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                        ]),
+                  ),
+                ),
+              ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class Position {
-  Position(this.top, this.left);
-
-  double top;
-  double left;
-
-  double getTop() {
-    return this.top;
-  }
-
-  double getLeft() {
-    return this.left;
+        ));
   }
 }

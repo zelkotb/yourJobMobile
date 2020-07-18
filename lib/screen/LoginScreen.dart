@@ -5,11 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:job/Constant.dart';
 import 'package:job/model/AuthenticationDTO.dart';
-import 'package:job/routes/RotationRoute.dart';
 import 'package:job/routes/SlideLeftRoute.dart';
+import 'package:job/routes/SlideRightRoute.dart';
 import 'package:job/screen/HomeScreen.dart';
 import 'package:job/screen/RegisterScreen.dart';
+import 'package:job/screen/ResetPasswordScreen.dart';
 import 'package:job/service/NetworkHelper.dart';
+import 'package:job/utils/Field.dart';
 import 'package:job/utils/jwt.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -23,7 +25,6 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     JwtUtil.logoutUser();
-    //print("width "+MediaQuery.of(context).size.width.toString());
     super.initState();
 
   }
@@ -61,7 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
           image: DecorationImage(
             fit: BoxFit.cover,
             colorFilter: ColorFilter.mode(Colors.black54, BlendMode.colorBurn),
-            image: AssetImage('images/background.jpg'),
+            image: AssetImage(kBackgroundImage),
           ),
         ),
         child: Scaffold(
@@ -134,7 +135,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         color: Colors.black12,
                         animationDuration: Duration(seconds: 5),
                         splashColor: Colors.orangeAccent,
-                        onPressed: () {},
+                        onPressed: isEnabled
+                            ? () => navigateToPage(ResetPasswordScreen(),'right')
+                            : null,
                         child: Text(
                           'Forget Password',
                           style: TextStyle(
@@ -152,7 +155,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         animationDuration: Duration(seconds: 5),
                         splashColor: Colors.orangeAccent,
                         onPressed: isEnabled
-                            ? () => navigateToPage(RegisterScreen())
+                            ? () => navigateToPage(RegisterScreen(),'left')
                             : null,
                         child: Text(
                           'Register',
@@ -173,8 +176,13 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  navigateToPage(Widget widget) {
-    Navigator.push(context, MaterialPageRoute(builder: (context)=>RegisterScreen()));
+  navigateToPage(Widget widget, String direction) {
+    if(direction=='left'){
+      Navigator.push(context, SlideLeftRoute(page: widget));
+    }
+    if(direction=='right'){
+      Navigator.push(context, SlideRightRoute(page: widget));
+    }
   }
 
   sendToServer() async {
@@ -191,7 +199,7 @@ class _LoginScreenState extends State<LoginScreen> {
       helper.setUrl('$baseUrl/my/pro/job/authenticate');
       var result = await helper.authenticate(authenticationDTO);
       if (result == 'Username or Password incorrect' ||
-          result == 'Internal error') {
+          result == kInternalError || result == kConnexionProblemMessage) {
         Alert(
           context: context,
           type: AlertType.warning,
@@ -402,17 +410,17 @@ class _CustomTextFieldState extends State<CustomTextField> {
             return this.errorMessage;
           }
           else if (hint == 'Password') {
-            if (!JwtUtil.validatePassword(value)) {
+            if (!FieldUtil.validatePassword(value)) {
               return this.passwordErrorMessage;
             }
           }
           else if (hint == 'Email') {
-            if (!JwtUtil.validateEmail(value)) {
+            if (!FieldUtil.validateEmail(value)) {
               return this.emailErrorMessage;
             }
           }
           else if (hint == 'Repeat Password') {
-              if(!JwtUtil.validateRepeatPassword(value, widget.getPasswordValue())){
+              if(!FieldUtil.validateRepeatPassword(value, widget.getPasswordValue())){
                 return this.repeatPasswordErrorMessage;
               }
           }

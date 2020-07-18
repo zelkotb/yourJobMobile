@@ -4,7 +4,6 @@ import 'package:job/Constant.dart';
 import 'package:job/model/RegisterDTO.dart';
 import 'package:job/screen/LoginScreen.dart';
 import 'package:job/service/NetworkHelper.dart';
-import 'package:job/utils/jwt.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
 enum UserType {
@@ -71,7 +70,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         image: DecorationImage(
           fit: BoxFit.cover,
           colorFilter: ColorFilter.mode(Colors.black54, BlendMode.colorBurn),
-          image: AssetImage('images/background.jpg'),
+          image: AssetImage(kBackgroundImage),
         ),
       ),
       child: Scaffold(
@@ -107,7 +106,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         child: Row(
                           children: <Widget>[
                             Container(
-                              width: (MediaQuery.of(context).size.width)/2.2,
+                              width: (MediaQuery.of(context).size.width) / 2.2,
                               child: ListTile(
                                 title: Text(
                                   'Candidate',
@@ -130,7 +129,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               ),
                             ),
                             Container(
-                              width: (MediaQuery.of(context).size.width)/2.5,
+                              width: (MediaQuery.of(context).size.width) / 2.5,
                               child: ListTile(
                                 title: Text(
                                   'Recruiter',
@@ -220,10 +219,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
       registerDTO.setRoles(roles);
       helper.setUrl('$baseUrl/my/pro/job/account/register');
       var response = await helper.register(registerDTO);
-      if (response == 'Internal error' || response['message'] != null) {
+      if (response == kInternalError ||
+          response == kConnexionProblemMessage ||
+          response['message'] != null
+          ) {
         ErrorResponse errorResponse = ErrorResponse();
-        String message =
-            response == 'Internal error' ? response : response['message'];
+        String message;
+        if (response == kInternalError ||
+            response == kConnexionProblemMessage) {
+          message = response;
+        } else {
+          message = response['message'];
+        }
         errorResponse.setMessage(message);
         Alert(
           context: context,
